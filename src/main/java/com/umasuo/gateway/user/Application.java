@@ -1,4 +1,4 @@
-package com.umasuo.gateway.developer;
+package com.umasuo.gateway.user;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.SpringCloudApplication;

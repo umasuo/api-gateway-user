@@ -1,9 +1,6 @@
-package com.umasuo.gateway.developer.config;
+package com.umasuo.gateway.user.config;
 
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Ignore rule.

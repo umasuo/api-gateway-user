@@ -1,4 +1,4 @@
-package com.umasuo.gateway.developer.config;
+package com.umasuo.gateway.user.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

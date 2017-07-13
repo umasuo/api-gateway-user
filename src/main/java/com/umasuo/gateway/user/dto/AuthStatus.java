@@ -1,4 +1,4 @@
-package com.umasuo.gateway.developer.dto;
+package com.umasuo.gateway.user.dto;
 
 import lombok.Data;
 

@@ -1,12 +1,12 @@
-package com.umasuo.gateway.developer.filters;
+package com.umasuo.gateway.user.filters;
 
 import static com.netflix.zuul.context.RequestContext.getCurrentContext;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.umasuo.gateway.developer.config.AuthFilterConfig;
-import com.umasuo.gateway.developer.config.IgnoreRule;
-import com.umasuo.gateway.developer.dto.AuthStatus;
+import com.umasuo.gateway.user.config.AuthFilterConfig;
+import com.umasuo.gateway.user.config.IgnoreRule;
+import com.umasuo.gateway.user.dto.AuthStatus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
   /**
    * Authentication service uri.
    */
-  @Value("${developer.service.uri:http://users/}")
+  @Value("${user.service.uri:http://users/}")
   private transient String authUri;
 
   /**
@@ -121,11 +121,13 @@ public class AuthenticationPreFilter extends ZuulFilter {
   @Override
   public Object run() {
     RequestContext ctx = getCurrentContext();
+
     HttpServletRequest request = ctx.getRequest();
-    String token = request.getHeader("authorization");
-    String developerId = request.getHeader("userId");
-    AuthStatus authStatus = checkAuthentication(token, developerId);
+
+    AuthStatus authStatus = checkAuthentication(request);
+
     Enumeration<String> headers = request.getHeaderNames();
+
     if (authStatus != null && authStatus.isLogin()) {
       // if true, then set the userId to header
       ctx.addZuulRequestHeader("userId", authStatus.getUserId());
@@ -144,15 +146,19 @@ public class AuthenticationPreFilter extends ZuulFilter {
   /**
    * Check the auth status
    *
-   * @param tokenString String
+   * @param request the HttpServletRequest
    * @return the customer id
    */
-  public AuthStatus checkAuthentication(String tokenString, String developerId) {
-    logger.debug("Enter. token: {}, userId: {}.", tokenString, developerId);
+  public AuthStatus checkAuthentication(HttpServletRequest request) {
+    logger.debug("Enter. request");
+
+    String tokenString = request.getHeader("authorization");
+    String userId = request.getHeader("userId");
+
     try {
       String token = tokenString.substring(7);
 
-      String uri = authUri + "/v1/developers/" + developerId + "/status?token=" + token;
+      String uri = authUri + "/v1/users/" + userId + "/status?token=" + token;
 
       logger.debug("AuthUri: {}", uri);
 
@@ -160,6 +166,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
       AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
       logger.debug("Exit. authStatus: {}", authStatus);
       return authStatus;
+
     } catch (RestClientException | NullPointerException ex) {
       logger.debug("Get customerId from authentication service failed.", ex);
       return null;
