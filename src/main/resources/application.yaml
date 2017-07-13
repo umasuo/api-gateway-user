@@ -20,6 +20,9 @@ zuul:
     user:
       path: /v1/users/**
       url: http://localhost:8809/v1/users
+    feedback:
+      path: /v1/feedback/**
+      url: http://localhost:8811/v1/feedback
 
 user:
   service:
