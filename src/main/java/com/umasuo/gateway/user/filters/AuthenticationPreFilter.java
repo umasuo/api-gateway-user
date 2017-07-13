@@ -2,7 +2,6 @@ package com.umasuo.gateway.user.filters;
 
 import static com.netflix.zuul.context.RequestContext.getCurrentContext;
 
-import com.netflix.client.http.HttpResponse;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.umasuo.gateway.user.config.AuthFilterConfig;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
 
 /**
  * 权限验证第一步，这里只验证用户是否已经登陆，并获取其具体权限信息，将开发者ID，权限通过header传入具体service.
