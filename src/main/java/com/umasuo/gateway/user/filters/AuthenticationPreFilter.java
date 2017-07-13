@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -169,16 +170,16 @@ public class AuthenticationPreFilter extends ZuulFilter {
       headers.set("token", token);
       HttpEntity entity = new HttpEntity(headers);
 
-
       logger.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：userId，developer拥有的权限
 
-      HttpEntity<AuthStatus> authStatus = restTemplate.exchange(uri, HttpMethod.GET, entity, AuthStatus.class);
+      HttpEntity<AuthStatus> authStatus = restTemplate
+          .exchange(uri, HttpMethod.GET, entity, AuthStatus.class);
       logger.debug("Exit. authStatus: {}", authStatus);
       return authStatus.getBody();
 
-    } catch (RestClientException | NullPointerException ex) {
+    } catch (RestClientException | NullPointerException | InvalidMediaTypeException ex) {
       logger.debug("Get customerId from authentication service failed.", ex);
       return null;
     }
