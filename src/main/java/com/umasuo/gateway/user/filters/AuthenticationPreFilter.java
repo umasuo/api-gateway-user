@@ -2,6 +2,7 @@ package com.umasuo.gateway.user.filters;
 
 import static com.netflix.zuul.context.RequestContext.getCurrentContext;
 
+import com.netflix.client.http.HttpResponse;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.umasuo.gateway.user.config.AuthFilterConfig;
@@ -12,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -22,6 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 
 /**
  * 权限验证第一步，这里只验证用户是否已经登陆，并获取其具体权限信息，将开发者ID，权限通过header传入具体service.
@@ -150,22 +155,30 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @return the customer id
    */
   public AuthStatus checkAuthentication(HttpServletRequest request) {
-    logger.debug("Enter. request");
+    logger.debug("Enter. request: {}.", request);
 
     String tokenString = request.getHeader("authorization");
     String userId = request.getHeader("userId");
+    String developerId = request.getHeader("developerId");
 
     try {
       String token = tokenString.substring(7);
 
-      String uri = authUri + "/v1/users/" + userId + "/status?token=" + token;
+      String uri = authUri + "/v1/users/" + userId + "/status";
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("developerId", developerId);
+      headers.set("token", token);
+      HttpEntity entity = new HttpEntity(headers);
+
 
       logger.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：userId，developer拥有的权限
-      AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
+
+      HttpEntity<AuthStatus> authStatus = restTemplate.exchange(uri, HttpMethod.GET, entity, AuthStatus.class);
       logger.debug("Exit. authStatus: {}", authStatus);
-      return authStatus;
+      return authStatus.getBody();
 
     } catch (RestClientException | NullPointerException ex) {
       logger.debug("Get customerId from authentication service failed.", ex);
