@@ -154,7 +154,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @return the customer id
    */
   public AuthStatus checkAuthentication(HttpServletRequest request) {
-    logger.debug("Enter. request: {}.", request);
+    logger.info("Enter.");
 
     String tokenString = request.getHeader("authorization");
     String userId = request.getHeader("userId");
@@ -170,17 +170,17 @@ public class AuthenticationPreFilter extends ZuulFilter {
       headers.set("token", token);
       HttpEntity entity = new HttpEntity(headers);
 
-      logger.debug("AuthUri: {}", uri);
+      logger.info("AuthUri: {}", uri);
 
       // TODO 这里应换成：userId，developer拥有的权限
 
       HttpEntity<AuthStatus> authStatus = restTemplate
           .exchange(uri, HttpMethod.GET, entity, AuthStatus.class);
-      logger.debug("Exit. authStatus: {}", authStatus);
+      logger.info("Exit. authStatus: {}", authStatus);
       return authStatus.getBody();
 
     } catch (RestClientException | NullPointerException | InvalidMediaTypeException ex) {
-      logger.debug("Get customerId from authentication service failed.", ex);
+      logger.info("Get customerId from authentication service failed.", ex);
       return null;
     }
   }
