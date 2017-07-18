@@ -32,7 +32,7 @@ auth:
   ignored:
     rules:
       - host: localhost
-        path: ^(/v1/users/verificationCodes)[a-z0-9\-/]*
+        path: ^(/v1/users/validationCodes)[a-z0-9\-/]*
         method: POST
       - host: localhost
         path: ^(/v1/users/signin)[a-z0-9\-/]*
