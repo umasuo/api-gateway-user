@@ -3,14 +3,19 @@ package com.umasuo.gateway.user.dto;
 import lombok.Data;
 
 /**
- * 用户权限状态，包含：是否登陆，所拥有的权限（scope）
- * Created by umasuo on 17/6/1.
+ * Check user's auth status.
  */
 @Data
 public class AuthStatus {
 
+  /**
+   * User Id.
+   */
   private String userId;
 
+  /**
+   * Is login.
+   */
   private boolean isLogin;
 
   // TODO: 17/6/21 后期添加scope等控制
